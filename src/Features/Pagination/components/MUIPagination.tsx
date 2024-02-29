@@ -14,19 +14,24 @@ import { Box } from "@mui/material";
 import Navbar from "./MUIAppBar";
 
 export default function MUIPagination() {
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = React.useState(1);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [input, setInput] = React.useState("");
-  
-  let user_data = userData;
-  let data:any = user_data.map((user,index)=>{
-    return {
-      ...user,
-      sn_no:index+1
-    }
-  })
-  
   const [filteredData, setFilteredData] = React.useState<any>([]);
+  const [onSearch, setOnSearach] = React.useState(false);
+
+  React.useEffect(() => {
+    filterData();
+  }, [page, rowsPerPage]);
+
+  let user_data = userData;
+
+  let data = user_data.map((user, index) => ({
+    ...user,
+    sn_no: index + 1,
+    name:
+      user.name && user.surname ? `${user?.name} ${user?.surname}` : user.name,
+  }));
 
   const columns = Object.keys(data[0]);
 
@@ -52,144 +57,193 @@ export default function MUIPagination() {
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
-
+    setInput("");
   };
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setRowsPerPage(+event.target.value);
-    setPage(0);
+    setPage(page);
   };
 
+  const clearInput = () => {
+    setInput("");
 
-  React.useEffect(() => {
-    filterData();
-  }, [input, page, rowsPerPage]);
+    const filtered_data: any = data.slice(
+      (page - 1) * rowsPerPage,
+      Number(page) * rowsPerPage
+    );
 
+    setFilteredData(filtered_data);
+  };
 
   const filterData = () => {
-    const filtered = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage).filter((row:any) =>  {
-      for (let key in row) {
-        if ( row[key]  && row[key].toString().toLowerCase().includes(input.toLowerCase())) {
-          console.log("X:::::::::::\n",row[key]);
-          return true;
-        }
-      }
-      return false;
-    });
-    setFilteredData(filtered);
+    const from_idx = Number(page);
+
+    if (input.trim() === "") {
+      const filtered_data: any = data.slice(
+        (page - 1) * rowsPerPage,
+        from_idx * rowsPerPage
+      );
+      setFilteredData(filtered_data);
+      setOnSearach(false);
+    } else {
+      const filtered = data.slice(
+        (page - 1) * rowsPerPage,
+        from_idx * rowsPerPage
+      );
+      const searched_data = filtered?.filter(
+        (i: any) =>
+          i.name?.includes(input.toLowerCase()) ||
+          i.surname?.includes(input.toLowerCase()) ||
+          i.platform?.includes(input.toLowerCase()) ||
+          `${i.sn_no}`?.includes(input.toLowerCase()) ||
+          `${i.loyaltyPoints}`?.includes(input.toLowerCase()) ||
+          `${i.totalOrderAmount}`?.includes(input.toLowerCase()) ||
+          `${i.totalOrders}`?.includes(input.toLowerCase()) ||
+          moment(i?.createdAt["$date"])
+            .format("MMMM, Do YYYY hh:mm A")
+            .toLowerCase()
+            ?.includes(input.toLowerCase()) ||
+          moment(
+            `${i?.dateOfBirth?.year}-${i?.dateOfBirth?.month}-${i?.dateOfBirth?.date}`
+          )
+            .format("DD MMM YYYY")
+            .toLowerCase()
+            ?.includes(input.toLowerCase())
+      );
+      // .filter((row: any) => {
+      //   for (let key in row) {
+      //     if (
+      //       row[key] &&
+      //       row[key]
+      //         .toString()
+      //         .toLowerCase()
+      //         .includes(input.toString().trim().toLowerCase())
+      //     ) {
+      //       return true; // If any value matches, return true
+      //     }
+      //   }
+      //   return false; // If no value matches, return false
+      // });
+      setOnSearach(true);
+      setFilteredData(searched_data);
+    }
   };
-  
 
-  const renderCell = (value: any,column:any) => {
-   
-
+  const renderCell = (value: any, column: any) => {
     if (typeof value === "object" && value !== null) {
-
       if ("$date" in value) {
+        //    data = data.map((user) => ({
+        //     ...user,
+        // createdAt: moment(value["$date"]).format("MMMM, Do YYYY hh:mm A")
+
+        //   }));
         // If the value is a date object, return its string representation
         return moment(value["$date"]).format("MMMM, Do YYYY hh:mm A");
       } else {
-
-      
         if ("date" in value) {
           let [date, month, year] = Object.values(value);
-
-          //   Moment Take only this format (YYYY MMM DDDD);
           let dateGrouped: string = year + "-" + month + "-" + date;
           let formattedDate = moment(dateGrouped).format("D MMM YYYY");
-          //    console.log(`Original ${date} ${month} ${year}`);
-          console.log(`Moment ${formattedDate}`);
+
+          //   data = data.map((user) => ({
+          //     ...user,
+          // dateOfBirth: {formattedDate}
+
+          //   }));
 
           return formattedDate;
-
-
-
-          
         } else {
-
-      
           return Object.values(value).join("/ ");
         }
-
       }
-    } else if (column === 'totalOrderAmount' || column === 'loyaltyPoints' || column === 'totalOrders'){
+    } else if (
+      column === "totalOrderAmount" ||
+      column === "loyaltyPoints" ||
+      column === "totalOrders"
+    ) {
+      // data = data.map((user, index) => ({
+      //   ...user,
+      //   totalOrderAmount: new Intl.NumberFormat("en-US").format(value),
+      //   loyaltyPoints: new Intl.NumberFormat("en-US").format(value),
+      //   totalOrders: new Intl.NumberFormat("en-US").format(value),
 
-      return new Intl.NumberFormat('en-US').format(value)
-    }
-    
-    else {
+      // }));
 
+      return new Intl.NumberFormat("en-US").format(value);
+    } else {
       // Render other values
-      if(value === undefined){
-        return 'N/A'
-      }else{
+      if (value === undefined) {
+        return "N/A";
+      } else {
         return value;
-
       }
     }
- 
-     
+  };
 
+  const handleFilertOut = (e: any) => {
+    // console.log("input", input);
+    filterData();
   };
 
   return (
-   <React.Fragment>
-
-    <Navbar setInput={setInput} input={input} />
-    <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {filteredColumns.map((column, i) => (
-                <TableCell key={i}>{column}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredData
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row:any ,rowIndex:number) => (
+    <React.Fragment>
+      <Navbar
+        setInput={setInput}
+        input={input}
+        handleFilertOut={handleFilertOut}
+        clearInput={clearInput}
+      />
+      <Paper sx={{ width: "100%", overflow: "hidden" }}>
+        <TableContainer sx={{ maxHeight: 440, whiteSpace: "nowrap" }}>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                {filteredColumns.map((column, i) => (
+                  <TableCell key={i}>{column}</TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredData.map((row: any, rowIndex: number) => (
                 <TableRow hover role="checkbox" tabIndex={-1} key={rowIndex}>
                   {filteredColumnNames.map((column: any, colIndex) => (
                     <TableCell key={colIndex}>
-                      {renderCell(row[column],column)}
+                      {renderCell(row[column], column)}
                     </TableCell>
                   ))}
                 </TableRow>
               ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableBody>
+          </Table>
+        </TableContainer>
 
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Pagination
-          count={Math.ceil(data.length / rowsPerPage)}
-          color="primary"
-          onChange={handleChangePage}
-        />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Pagination
+            count={Math.ceil(data.length / rowsPerPage)}
+            color="primary"
+            onChange={handleChangePage}
+            onClick={handleFilertOut}
+          />
 
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 20, 30, 50, 100]}
-          count={Math.ceil(data.length / rowsPerPage)}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          
-        />
-      </Box>
-    </Paper>
-   
-    </React.Fragment> 
-    
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 20, 30, 50, 100]}
+            count={Math.ceil(data.length / rowsPerPage)}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Box>
+      </Paper>
+    </React.Fragment>
   );
 }
