@@ -29,8 +29,7 @@ export default function MUIPagination() {
   let data = user_data.map((user, index) => ({
     ...user,
     sn_no: index + 1,
-    name:
-      user.name && user.surname ? `${user?.name} ${user?.surname}` : user.name,
+    name:  (user.name &&  user.surname ? `${user?.name} ${user?.surname}` : user.name) || (user.name ? user.name :  '') || (user.surname ? user.surname :  '')
   }));
 
   const columns = Object.keys(data[0]);
@@ -89,14 +88,14 @@ export default function MUIPagination() {
       setFilteredData(filtered_data);
       setOnSearach(false);
     } else {
-      const filtered = data.slice(
+      let filtered = data.slice(
         (page - 1) * rowsPerPage,
         from_idx * rowsPerPage
       );
       const searched_data = filtered?.filter(
         (i: any) =>
-          i.name?.includes(input.toLowerCase()) ||
-          i.surname?.includes(input.toLowerCase()) ||
+          i.name?.toString().toLowerCase().includes(input.toLowerCase()) ||
+          // i.surname?.includes(input.toLowerCase()) ||
           i.platform?.includes(input.toLowerCase()) ||
           `${i.sn_no}`?.includes(input.toLowerCase()) ||
           `${i.loyaltyPoints}`?.includes(input.toLowerCase()) ||
@@ -109,7 +108,7 @@ export default function MUIPagination() {
           moment(
             `${i?.dateOfBirth?.year}-${i?.dateOfBirth?.month}-${i?.dateOfBirth?.date}`
           )
-            .format("DD MMM YYYY")
+            .format("D MMM YYYY")
             .toLowerCase()
             ?.includes(input.toLowerCase())
       );
@@ -135,24 +134,12 @@ export default function MUIPagination() {
   const renderCell = (value: any, column: any) => {
     if (typeof value === "object" && value !== null) {
       if ("$date" in value) {
-        //    data = data.map((user) => ({
-        //     ...user,
-        // createdAt: moment(value["$date"]).format("MMMM, Do YYYY hh:mm A")
-
-        //   }));
-        // If the value is a date object, return its string representation
         return moment(value["$date"]).format("MMMM, Do YYYY hh:mm A");
       } else {
         if ("date" in value) {
           let [date, month, year] = Object.values(value);
           let dateGrouped: string = year + "-" + month + "-" + date;
           let formattedDate = moment(dateGrouped).format("D MMM YYYY");
-
-          //   data = data.map((user) => ({
-          //     ...user,
-          // dateOfBirth: {formattedDate}
-
-          //   }));
 
           return formattedDate;
         } else {
@@ -164,16 +151,8 @@ export default function MUIPagination() {
       column === "loyaltyPoints" ||
       column === "totalOrders"
     ) {
-      // data = data.map((user, index) => ({
-      //   ...user,
-      //   totalOrderAmount: new Intl.NumberFormat("en-US").format(value),
-      //   loyaltyPoints: new Intl.NumberFormat("en-US").format(value),
-      //   totalOrders: new Intl.NumberFormat("en-US").format(value),
-
-      // }));
-
       return new Intl.NumberFormat("en-US").format(value);
-    } else {
+      } else {
       // Render other values
       if (value === undefined) {
         return "N/A";
