@@ -23,7 +23,7 @@ Short Docs : http://www-db.deis.unibo.it/courses/TW/DOCS/w3schools/googleapi/goo
 
 Official Detail Documentation : https://developers.google.com/maps/documentation/javascript/examples/advanced-markers-zoom
 
-Playlist to Learn : https://www.youtube.com/watch?v=Gy1BTxgAQ30&list=PL1Ad9afWjC7Zrz68gAP0_Ms-wUBe8QJrI&index=12
+Playlist to Learn : https://youtube.com/playlist?list=PL1Ad9afWjC7Zrz68gAP0_Ms-wUBe8QJrI&si=fbz_GGkfzD2rM3Ov
 
 Info Window Color Setting : https://stackoverflow.com/questions/37456627/how-to-change-the-infowindow-background-color
 
