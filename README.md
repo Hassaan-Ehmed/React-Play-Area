@@ -16,15 +16,16 @@ You will also see any lint errors in the console.
 
 
 ### `Resources`
-Theamming : https://snazzymaps.com/editor/customize/287431
-Compoehrenxois Docs : http://www-db.deis.unibo.it/courses/TW/DOCS/w3schools/googleapi/google_maps_overlays.asp.html#gsc.tab=0
-https://developers.google.com/maps/documentation/javascript/examples/advanced-markers-zoom
 
-Official Docs
-https://www.youtube.com/watch?v=Gy1BTxgAQ30&list=PL1Ad9afWjC7Zrz68gAP0_Ms-wUBe8QJrI&index=12
+Map Theaming : https://snazzymaps.com/editor/customize/287431
 
+Short Docs : http://www-db.deis.unibo.it/courses/TW/DOCS/w3schools/googleapi/google_maps_overlays.asp.html#gsc.tab=0
 
-https://stackoverflow.com/questions/37456627/how-to-change-the-infowindow-background-color
+Official Detail Documentation : https://developers.google.com/maps/documentation/javascript/examples/advanced-markers-zoom
+
+Playlist to Learn : https://www.youtube.com/watch?v=Gy1BTxgAQ30&list=PL1Ad9afWjC7Zrz68gAP0_Ms-wUBe8QJrI&index=12
+
+Info Window Color Setting : https://stackoverflow.com/questions/37456627/how-to-change-the-infowindow-background-color
 
 
 ### `npm test`
