@@ -1,44 +1,109 @@
-import { GoogleMap, InfoWindow, Marker } from '@react-google-maps/api';
+import { Circle, GoogleMap, InfoWindow, Marker, Polygon } from '@react-google-maps/api';
 import React, { useState } from 'react'
 import redMarker  from '../images/map-marker-icon_4x.png'
 import goldMarker  from '../images/map-marker-icon-gold_4x.png'
 import blueMarker  from '../images/map-marker-icon-blue_4x.png'
 import greenMarker  from '../images/map-marker-icon-green-dot_1_3x.png'
+import lightGreen from '../images/location-marker-icon-1735x2048-i3twt0x3XY.png'
 import '../Map.css'
 import { mapOptions } from './MapConfigiration';
 
-const Map = ({isLoaded}:any) => {
-  const defaultCenter = {
-    lat: 24.8607,
-    lng: 67.0011
-  };
+
+
+const Map = ({
+
+  isLoaded,
+  shape,
+  setCounterRadius,
+  counterRadius,
+  setIsCounterRadius,
+  setCircleData,
+  circleData,
+  defaultCenter,
+  polygonFalse
+
+}:any) => {
+
+
+  
 
   // const [selectedMark,setSelectedMark] =  useState<string | any>("");
   // State to store the marker position
   const [markerPosition, setMarkerPosition] = useState<any>(defaultCenter);
+  const [coordArray,setCordArray] =   useState<any>([]);
+
+
+  
+  
+  // React.useEffect(()=>(  console.log("ShapeS",shape) ),[shape]);
 
   // Function to handle map click event
+  
   const handleMapClick = (event:any) => {
     const clickedPosition = {
       lat: event?.latLng?.lat(),
       lng: event?.latLng?.lng()
     };
 
-     console.log("after setting new position...",clickedPosition)
-    setMarkerPosition(clickedPosition);
-    
+
+    if(shape === 'Polygon'){
+      
+        // console.log("Shape under if :",shape);
+
+        // setIsCounterRadius(false);
+
+        // setCounterRadius(0);
+        // setCircleData({
+        //   position:defaultCenter,
+        //   radius:0
+        // });
+
+      setCordArray([...coordArray,clickedPosition]);
+      setCircleData({
+        ...circleData,
+        position:clickedPosition
+      })
+      
+      
+    }else if (shape === 'Circle'){
+
+      setIsCounterRadius(true);
+      setCordArray([]);
+      
+       
+        setCounterRadius(counterRadius  === 0  ? 5000 :  counterRadius);
+        
+        setCircleData({
+          position:clickedPosition,
+          radius: counterRadius === 0  ? 5000 : counterRadius
+        });  
+        
+      
+    }else{
+      setIsCounterRadius(false);
+      setCircleData({
+        position:clickedPosition,
+        radius:0
+      });
+      
+      setCordArray([]);
+
+      setMarkerPosition(clickedPosition);
+
+    }
+
   };
 
 
   const containerStyle = {
     width: '100%',
-    height: '90vh'
+    height: '85vh'
   };
   
-  const center = {
-    lat: 24.8607,
-    lng: 67.0011
-  };
+  // const center = {
+  //   lat: 24.8607,
+  //   lng: 67.0011
+  // };
 
 
   const anotherMarker={
@@ -100,7 +165,6 @@ const Map = ({isLoaded}:any) => {
     }
   ]
 
-
   const generateMarker = (status:string) => {
 
     
@@ -125,24 +189,34 @@ const Map = ({isLoaded}:any) => {
 
   }
 
+
+
   console.log('markerPosition',markerPosition);
+
+console.log('shape',shape)
 
   return isLoaded && (
     <GoogleMap
+    
       mapContainerStyle={containerStyle}
-      center={defaultCenter}
+      center={circleData.position}
       zoom={10}
       options={{
-        
-        mapTypeId:'hybrid',
-        zoomControl:true,
+        mapTypeId:'terrain',
+        zoomControl:false,
         gestureHandling: "cooperative",
-        // disableDefaultUI:true
+        disableDefaultUI:true,
         fullscreenControl:false,
+        // zoomControlOptions:null,
       keyboardShortcuts:false,
-      styles:mapOptions.mapTheme
+      styles:mapOptions.mapTheme,
+
+    
+    
+      
 
       }}
+
 
 onClick={handleMapClick}
    
@@ -150,17 +224,56 @@ onClick={handleMapClick}
       { /* Child components, such as markers, info windows, etc. */ }
       <>
 
+     { shape == 'Polygon' ?  <Polygon
+          paths={coordArray}
+          options={{
+            fillColor: '#FF0000',
+            fillOpacity: 0.5,
+            strokeColor: 'black',
+            strokeOpacity: 1,
+            strokeWeight: 2,
+          }}
+        />
+        
+       : shape == 'Circle' &&  (<Circle
+       center={circleData.position}
+       radius={circleData.radius}
+       options={{
+         fillColor: '#FF0000',
+         fillOpacity: 0.5,
+         strokeColor: 'white',
+         strokeOpacity: 1,
+         strokeWeight: 2,
+       }}
 
- 
- { markerPosition  && <Marker position={markerPosition} 
- 
 
- options={{
-  icon:goldMarker
- }}
+     />)
+      
 
- />
+    }
+
+
+{
+
+
+shape == 'Polygon' ? 
+
+coordArray.length > 0 &&  coordArray.map((coordinates:any,idX:number)=>(
+
+  <Marker position={coordinates} options={{icon:lightGreen,}} key={idX} animation={google.maps.Animation.DROP} />
+  
+  ))
+  
+  : shape == 'Circle' ?
+  
+  <Marker position={circleData.position} options={{icon:lightGreen,}} animation={google.maps.Animation.BOUNCE} />
+  
+  : shape == 'Normal' && 
+  <Marker position={markerPosition} options={{icon:lightGreen,}} animation={google.maps.Animation.BOUNCE}   />
+
 }
+
+
   {/* {
     selectedMark && 
     (

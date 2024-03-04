@@ -27,6 +27,8 @@ Playlist to Learn : https://youtube.com/playlist?list=PL1Ad9afWjC7Zrz68gAP0_Ms-w
 
 Info Window Color Setting : https://stackoverflow.com/questions/37456627/how-to-change-the-infowindow-background-color
 
+Shapes and Edit your Map : https://geojson.io/ 
+
 
 ### `npm test`
 
