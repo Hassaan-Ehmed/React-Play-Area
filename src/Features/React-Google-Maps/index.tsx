@@ -27,11 +27,19 @@ export default function ReactGoogleMapes() {
   const [coordArray, setCordArray] = useState<any>([]);
   const [markerPosition, setMarkerPosition] = useState<any>(defaultCenter);
 
-  const polygonFalse = () => setIsCounterRadius(false);
+
+  React.useEffect(()=>{
+
+    
+    setMarkerPosition(defaultCenter)
+    setCenter(defaultCenter);
+
+  },[])
 
   const { isLoaded } = useJsApiLoader({
     id: mapOptions.googleMapApiKey,
     googleMapsApiKey: mapOptions.googleMapApiKey,
+
   });
 
   const handleChange = (
@@ -123,6 +131,7 @@ export default function ReactGoogleMapes() {
       <Map
         isLoaded={isLoaded}
         shape={shape}
+        setShape={setShape}
         setCounterRadius={setCounterRadius}
         counterRadius={counterRadius}
         setIsCounterRadius={setIsCounterRadius}

@@ -2,6 +2,7 @@ import {
   Circle,
   GoogleMap,
   InfoWindow,
+  LoadScript,
   Marker,
   Polygon,
 } from "@react-google-maps/api";
@@ -13,6 +14,7 @@ import greenMarker from "../images/map-marker-icon-green-dot_1_3x.png";
 import lightGreen from "../images/location-marker-icon-1735x2048-i3twt0x3XY.png";
 import "../Map.css";
 import { mapOptions } from "./MapConfigiration";
+import Searchbar from "./Searchbar";
 
 const Map = ({
   isLoaded,
@@ -29,9 +31,14 @@ const Map = ({
   coordArray,
   setMarkerPosition,
   markerPosition,
+  setShape,
 }: any) => {
+  console.log("in MAP INI", shape);
+  console.log("in MAP INI MARKER>>", markerPosition);
+
   const [map, setMap] = React.useState<any>(null);
   const mapRef = useRef<any>();
+  const inputRef = useRef<any>();
 
   // React.useCallback(function callback
 
@@ -59,13 +66,18 @@ const Map = ({
   // }, [])
 
   const onLoad = React.useCallback(function callback(map: any) {
-    // This is just an example of getting and using the map instance!!! don't just blindly copy!
-    const bounds = new window.google.maps.LatLngBounds(defaultCenter);
-    map.fitBounds(bounds);
-    setMap(map);
+    // const bounds = new window.google.maps.LatLngBounds(defaultCenter);
+    // map.fitBounds(bounds);
+    // setMap(map);
 
-    console.log(map.getZoom());
-    
+    // console.log(map.getZoom());
+
+    const googleMap = map;
+
+    const panTo = new window.google.maps.LatLng(defaultCenter);
+    googleMap.panTo(panTo);
+
+    setMap(googleMap);
   }, []);
 
   const onUnmount = React.useCallback(function callback(map: any) {
@@ -83,65 +95,59 @@ const Map = ({
     };
 
     if (shape === "Polygon") {
-
-    setMarkerPosition(clickedPosition);
+      setMarkerPosition(clickedPosition);
       setCordArray([...coordArray, clickedPosition]);
 
+      if (!map) {
+        return;
+      }
 
- if (!map) { return; }
- const googleMap = map;
- const bounds = new window.google.maps.LatLngBounds(clickedPosition);
- googleMap.fitBounds(bounds);
-
-
+      const googleMap = map;
+      const panTo = new window.google.maps.LatLng(
+        clickedPosition.lat,
+        clickedPosition.lng
+      );
+      googleMap.panTo(panTo);
     } else if (shape === "Circle") {
-
-
       setIsCounterRadius(true);
       setMarkerPosition(clickedPosition);
       setCordArray([]);
 
-      setCounterRadius(counterRadius === 0 ? 50 : counterRadius);
+      setCounterRadius(counterRadius === 0 ? 5000 : counterRadius);
 
+      setCircleRadius(counterRadius === 0 ? 5000 : counterRadius);
 
-    setCircleRadius(counterRadius === 0 ? 50 : counterRadius);
+      if (!map) {
+        return;
+      }
 
-
-      // setCircleData({
-      //   // position: clickedPosition,
-      //   ...circleData,
-      //   radius: counterRadius === 0 ? 50 : counterRadius,
-      // });
-
-      if (!map) { return; }
       const googleMap = map;
-      const bounds = new window.google.maps.LatLngBounds(clickedPosition);
-
-      let zoom = googleMap.getZoom();
-      googleMap.setZoom(zoom > 6 ? 6 : zoom);
-      googleMap.fitBounds(bounds);
-
-
+      const panTo = new window.google.maps.LatLng(
+        clickedPosition.lat,
+        clickedPosition.lng
+      );
+      googleMap.panTo(panTo);
     } else {
       setIsCounterRadius(false);
       setMarkerPosition(clickedPosition);
       setCordArray([]);
 
-      if (!map) { return; }
+      // if (!map) { return; }
 
-      // const googleMap = map;
-      // const panTo = new window.google.maps.LatLng(
-      //   clickedPosition.lat,
-      //   clickedPosition.lng
-      // );
-      // googleMap.panTo(panTo);
-      // if (!map) {
-      //   return;
-      // }
+      if (!map) {
+        return;
+      }
 
       const googleMap = map;
-      const bounds = new window.google.maps.LatLngBounds(clickedPosition);
-      googleMap.fitBounds(bounds);
+      const panTo = new window.google.maps.LatLng(
+        clickedPosition.lat,
+        clickedPosition.lng
+      );
+      googleMap.panTo(panTo);
+
+      // const googleMap = map;
+      // const bounds = new window.google.maps.LatLngBounds(clickedPosition);
+      // googleMap.fitBounds(bounds);
     }
   };
 
@@ -229,83 +235,172 @@ const Map = ({
     }
   };
 
+  const handlePlaceChanged = () => {
+    const [place] = inputRef.current.getPlaces();
+
+    if (place) {
+      // console.log("Place Name",place.name);
+
+      const selectedPoint = {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      };
+
+      setMarkerPosition(selectedPoint);
+      setIsCounterRadius(false);
+      setCordArray([]);
+
+      // if (!map) { return; }
+
+      if (!map) {
+        return;
+      }
+
+      const googleMap = map;
+      const panTo = new window.google.maps.LatLng(
+        selectedPoint.lat,
+        selectedPoint.lng
+      );
+      googleMap.panTo(panTo);
+    }
+  };
+
+  // const handlePlaceChanged = () => {
+  //   const input = inputRef.current.value;
+  //   const placesService = new window.google.maps.places.PlacesService(mapRef.current);
+  //   placesService.textSearch({ query: input }, (results, status) => {
+  //     if (status === window.google.maps.places.PlacesServiceStatus.OK && results?.length) {
+  //       const place:any = results[0];
+  //       const selectedPoint = {
+  //         lat: place.geometry.location.lat(),
+  //         lng: place.geometry.location.lng()
+  //       }
+  //       setMarkerPosition(selectedPoint);
+  //     }
+  //   });
+  // }
+
+  const handleCurrentLocation = () => {
+
+   
+    if (window.navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const currentLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+
+        // setShape('Normal')
+        setIsCounterRadius(false);
+        setMarkerPosition(currentLocation);
+        setCordArray([]);
+
+        // if (!map) { return; }
+
+        if (!map) {
+          return;
+        }
+
+        const googleMap = map;
+        const panTo = new window.google.maps.LatLng(
+          currentLocation.lat,
+          currentLocation.lng
+        );
+        googleMap.panTo(panTo);
+      });
+    } else {
+      console.log("📍Geolocation is not supported by this browser");
+    }
+  };
+
   return (
-    isLoaded && (
-      <GoogleMap
-        onLoad={onLoad}
-        onUnmount={onUnmount}
-        mapContainerStyle={containerStyle}
-        center={center}
-        zoom={10}
-        options={{
-          mapTypeId: "terrain",
-          zoomControl: false,
-          gestureHandling: "cooperative",
-          disableDefaultUI: true,
-          fullscreenControl: false,
-          // zoomControlOptions:null,
-          keyboardShortcuts: false,
-          styles: mapOptions.mapTheme,
-        }}
-        onClick={handleMapClick}
+    // isLoaded && (
+
+    <>
+      <LoadScript
+        googleMapsApiKey={mapOptions.googleMapApiKey}
+        libraries={["places"]}
       >
-        {/* Child components, such as markers, info windows, etc. */}
-        <>
-          {shape == "Polygon" ? (
-            <Polygon
-              paths={coordArray}
-              options={{
-                fillColor: "#FF0000",
-                fillOpacity: 0.5,
-                strokeColor: "black",
-                strokeOpacity: 1,
-                strokeWeight: 2,
-              }}
+        <GoogleMap
+          onLoad={onLoad}
+          onUnmount={onUnmount}
+          mapContainerStyle={containerStyle}
+          center={center}
+          zoom={10}
+          options={{
+            mapTypeId: "terrain",
+            zoomControl: false,
+            gestureHandling: "cooperative",
+            disableDefaultUI: true,
+            fullscreenControl: false,
+            // zoomControlOptions:null,
+            keyboardShortcuts: false,
+            styles: mapOptions.mapTheme,
+          }}
+          onClick={handleMapClick}
+        >
+          {/* Child components, such as markers, info windows, etc. */}
+          <>
+            <Searchbar
+              handleCurrentLocation={handleCurrentLocation}
+              handlePlaceChanged={handlePlaceChanged}
+              inputRef={inputRef}
             />
-          ) : (
-            shape == "Circle" && (
-              <Circle
-                center={markerPosition}
-                radius={circleRadius}
+
+            {shape == "Polygon" ? (
+              <Polygon
+                paths={coordArray}
                 options={{
                   fillColor: "#FF0000",
                   fillOpacity: 0.5,
-                  strokeColor: "white",
+                  strokeColor: "black",
                   strokeOpacity: 1,
                   strokeWeight: 2,
                 }}
               />
-            )
-          )}
+            ) : (
+              shape == "Circle" && (
+                <Circle
+                  center={markerPosition}
+                  radius={circleRadius}
+                  options={{
+                    fillColor: "#FF0000",
+                    fillOpacity: 0.5,
+                    strokeColor: "white",
+                    strokeOpacity: 1,
+                    strokeWeight: 2,
+                  }}
+                />
+              )
+            )}
 
-          {shape == "Polygon" ? (
-            coordArray.length > 0 &&
-            coordArray.map((coordinates: any, idX: number) => (
-              <Marker
-                position={coordinates}
-                options={{ icon: lightGreen }}
-                key={idX}
-                animation={google.maps.Animation.DROP}
-              />
-            ))
-          ) : shape == "Circle" ? (
-            <Marker
-
-              position={markerPosition}
-              options={{ icon: lightGreen }}
-              animation={google.maps.Animation.BOUNCE}
-            />
-          ) : (
-            shape == "Normal" && (
+            {shape == "Polygon" ? (
+              coordArray.length > 0 &&
+              coordArray.map((coordinates: any, idX: number) => (
+                <Marker
+                  position={coordinates}
+                  options={{ icon: lightGreen }}
+                  key={idX}
+                  animation={google.maps.Animation.DROP}
+                />
+              ))
+            ) : shape == "Circle" ? (
               <Marker
                 position={markerPosition}
                 options={{ icon: lightGreen }}
                 animation={google.maps.Animation.BOUNCE}
               />
-            )
-          )}
+            ) : (
+              shape == "Normal" && (
+                <Marker
+                  position={markerPosition}
+                  options={{ icon: lightGreen }}
+                  // animation={google.maps.Animation.BOUNCE}
+                />
+              )
+            )}
 
-          {/* {
+            {/* {
     selectedMark && 
     (
 
@@ -324,9 +419,10 @@ options={{
 </InfoWindow>
     )
   } */}
-        </>
-      </GoogleMap>
-    )
+          </>
+        </GoogleMap>
+      </LoadScript>
+    </>
   );
 };
 
