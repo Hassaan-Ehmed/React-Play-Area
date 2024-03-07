@@ -6,7 +6,7 @@ export const MAP_THEME = [
         "featureType": "administrative",
         "stylers": [
             {
-                "visibility": "off"
+                "visibility": "simplified"
             }
         ]
     },

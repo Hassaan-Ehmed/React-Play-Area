@@ -6,7 +6,7 @@ import {
   Marker,
   Polygon,
 } from "@react-google-maps/api";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import redMarker from "../images/map-marker-icon_4x.png";
 import goldMarker from "../images/map-marker-icon-gold_4x.png";
 import blueMarker from "../images/map-marker-icon-blue_4x.png";
@@ -33,12 +33,51 @@ const Map = ({
   markerPosition,
   setShape,
 }: any) => {
-  console.log("in MAP INI", shape);
-  console.log("in MAP INI MARKER>>", markerPosition);
+
+
 
   const [map, setMap] = React.useState<any>(null);
   const mapRef = useRef<any>();
   const inputRef = useRef<any>();
+  const  [input,setInput] = useState<string>('');
+
+
+  useEffect(() => {
+
+    // // Cleanup function to remove the map when the component unmounts
+    // return () => {
+    //   flightPath.setMap(null);
+    // };
+   
+      // Clear marker position when shape changes
+      setMarkerPosition(defaultCenter);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   
+
+  }, [shape]);
+
+
+//   useEffect(()=>{
+
+//     try{  
+      
+
+// const directionService = new google.maps.DirectionsService;
+// const directionDisplay = new google.maps.DirectionsRenderer;
+
+
+// directionDisplay.setMap(map);
+
+// // calculateDistance(directionService,directionDisplay);
+
+// }catch(error){
+
+//   console.log("Erro Occured: ",error);
+
+// }
+
+
+//   },[shape])
 
   // React.useCallback(function callback
 
@@ -72,23 +111,41 @@ const Map = ({
 
     // console.log(map.getZoom());
 
-    const googleMap = map;
+
+    try{
+   
+      const googleMap = map;
 
     const panTo = new window.google.maps.LatLng(defaultCenter);
     googleMap.panTo(panTo);
 
     setMap(googleMap);
+
+  }catch(error){
+   
+    console.log("Error Occured: ",error);
+
+  }
   }, []);
 
   const onUnmount = React.useCallback(function callback(map: any) {
-    setMap(null);
+
+try{
+  
+  setMap(null);
+
+}catch(error){
+  console.log("Error Occured: ",error);
+}
+
   }, []);
 
   // Function to handle map click event
 
   const handleMapClick = (event: any) => {
-    // settingBounds(event);
-
+    
+    try{
+    
     const clickedPosition = {
       lat: event?.latLng?.lat(),
       lng: event?.latLng?.lng(),
@@ -108,6 +165,7 @@ const Map = ({
         clickedPosition.lng
       );
       googleMap.panTo(panTo);
+
     } else if (shape === "Circle") {
       setIsCounterRadius(true);
       setMarkerPosition(clickedPosition);
@@ -143,12 +201,19 @@ const Map = ({
         clickedPosition.lat,
         clickedPosition.lng
       );
+      
       googleMap.panTo(panTo);
 
       // const googleMap = map;
       // const bounds = new window.google.maps.LatLngBounds(clickedPosition);
       // googleMap.fitBounds(bounds);
     }
+
+  }catch(error){
+    console.log("Error Occured: ",error);
+  }
+
+
   };
 
   const containerStyle = {
@@ -236,6 +301,10 @@ const Map = ({
   };
 
   const handlePlaceChanged = () => {
+
+    try{
+
+    
     const [place] = inputRef.current.getPlaces();
 
     if (place) {
@@ -249,6 +318,80 @@ const Map = ({
       setMarkerPosition(selectedPoint);
       setIsCounterRadius(false);
       setCordArray([]);
+      
+
+
+      if(shape === "Route"){
+      
+        if(navigator['geolocation']){
+      
+      
+      window.navigator.geolocation.getCurrentPosition((position)=>{
+      
+        const currentLocation = {
+      lat:position.coords.latitude,
+      lng:position.coords.longitude,
+      
+        }
+
+        const map:any = new google.maps.Map(document.getElementById("map") as HTMLElement, {
+          center: center,
+          mapTypeId: "terrain",
+          zoom:10,
+          zoomControl: false,
+          gestureHandling: "cooperative",
+          disableDefaultUI: true,
+          fullscreenControl: false,
+          keyboardShortcuts: false,
+          styles: mapOptions.mapTheme,
+        }
+           
+        );
+    
+        const flightPlanCoordinates = [ currentLocation , selectedPoint ];
+    
+console.log(
+
+"Current Location :",flightPlanCoordinates[0],
+"Destination :",flightPlanCoordinates[1],
+
+);
+        
+        const flightPath = new google.maps.Polyline({
+          path: flightPlanCoordinates,
+          geodesic: true,
+          strokeColor: "#FF0000",
+          strokeOpacity: 1.0,
+          strokeWeight: 2,
+        });
+    
+
+
+        flightPath.setMap(map);
+        setMarkerPosition(currentLocation);
+        setCordArray([currentLocation,selectedPoint]);
+  
+        if (!map) {
+          return;
+        }
+  
+        const googleMap = map;
+        const panTo = new window.google.maps.LatLng(
+          selectedPoint.lat,
+          selectedPoint.lng
+        );
+        googleMap.panTo(panTo);
+
+
+
+  // console.log)())      
+         
+      })
+      
+        }
+         
+      }
+
 
       // if (!map) { return; }
 
@@ -263,6 +406,13 @@ const Map = ({
       );
       googleMap.panTo(panTo);
     }
+
+  }catch(error){
+    console.log("Error Occured: ",error);
+  }
+
+
+
   };
 
   // const handlePlaceChanged = () => {
@@ -282,20 +432,22 @@ const Map = ({
 
   const handleCurrentLocation = () => {
 
-   
-    if (window.navigator.geolocation) {
+   try{
+
+ 
+    if ('geolocation' in navigator) {
+
       navigator.geolocation.getCurrentPosition((position) => {
         const currentLocation = {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
+
         };
 
-        // setShape('Normal')
         setIsCounterRadius(false);
         setMarkerPosition(currentLocation);
         setCordArray([]);
 
-        // if (!map) { return; }
 
         if (!map) {
           return;
@@ -307,13 +459,74 @@ const Map = ({
           currentLocation.lng
         );
         googleMap.panTo(panTo);
+
+
       });
     } else {
       console.log("📍Geolocation is not supported by this browser");
     }
+
+
+  }catch(error){
+    console.log("Error Occured: ",error);
+   }
+
+
+
   };
 
-  return (
+// const calculateDistance=(directionService:any,directionDisplay:any)=>{
+
+
+
+//   try{
+
+// if(shape === "Route"){
+
+//   if(navigator['geolocation']){
+
+
+// window.navigator.geolocation.getCurrentPosition((position)=>{
+
+//   const currentLocation = {
+// lat:position.coords.latitude,
+// ln:position.coords.latitude,
+
+//   }
+
+//   directionService.route({
+//     origin:currentLocation,
+//     destination:input,
+//     travelMode:'DRIVING'
+  
+//   },(response:any,status:any)=>{
+
+
+//     if(status === 'OK'){
+//   directionDisplay.setDirection(response);
+//     }else{
+
+//       alert(`Direction request failed due to ${status}`);
+//     }
+
+
+
+//   });
+
+
+
+// })
+
+//   }
+   
+// }
+
+//   }catch(error){
+//     console.log("Error Occured: ",error)
+//   }
+// }
+
+return (
     // isLoaded && (
 
     <>
@@ -321,14 +534,23 @@ const Map = ({
         googleMapsApiKey={mapOptions.googleMapApiKey}
         libraries={["places"]}
       >
+
+        <Searchbar
+             handleCurrentLocation={handleCurrentLocation}
+              handlePlaceChanged={handlePlaceChanged}
+              inputRef={inputRef}
+              setInput={setInput}
+            />
         <GoogleMap
+        id="map"
           onLoad={onLoad}
           onUnmount={onUnmount}
           mapContainerStyle={containerStyle}
           center={center}
           zoom={10}
-          options={{
-            mapTypeId: "terrain",
+            options={{
+              maxZoom:450,
+              mapTypeId: "terrain",
             zoomControl: false,
             gestureHandling: "cooperative",
             disableDefaultUI: true,
@@ -341,11 +563,7 @@ const Map = ({
         >
           {/* Child components, such as markers, info windows, etc. */}
           <>
-            <Searchbar
-              handleCurrentLocation={handleCurrentLocation}
-              handlePlaceChanged={handlePlaceChanged}
-              inputRef={inputRef}
-            />
+            
 
             {shape == "Polygon" ? (
               <Polygon
@@ -358,8 +576,7 @@ const Map = ({
                   strokeWeight: 2,
                 }}
               />
-            ) : (
-              shape == "Circle" && (
+            ) : (shape == "Circle" && (
                 <Circle
                   center={markerPosition}
                   radius={circleRadius}
@@ -374,7 +591,7 @@ const Map = ({
               )
             )}
 
-            {shape == "Polygon" ? (
+            {(shape == "Polygon" || shape === "Route") ? (
               coordArray.length > 0 &&
               coordArray.map((coordinates: any, idX: number) => (
                 <Marker
@@ -395,7 +612,6 @@ const Map = ({
                 <Marker
                   position={markerPosition}
                   options={{ icon: lightGreen }}
-                  // animation={google.maps.Animation.BOUNCE}
                 />
               )
             )}
@@ -423,7 +639,7 @@ options={{
         </GoogleMap>
       </LoadScript>
     </>
-  );
+  );  
 };
 
 export default Map;

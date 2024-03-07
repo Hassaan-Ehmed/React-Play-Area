@@ -9,6 +9,7 @@ import {
 import React, { useState } from "react";
 import Map from "./components/Map";
 import { mapOptions } from "./components/MapConfigiration";
+import RouteIcon from '@mui/icons-material/Route';
 
 export default function ReactGoogleMapes() {
   const defaultCenter = {
@@ -30,23 +31,42 @@ export default function ReactGoogleMapes() {
 
   React.useEffect(()=>{
 
-    
-    setMarkerPosition(defaultCenter)
-    setCenter(defaultCenter);
+try{
+
+  setCordArray([]);
+  setIsCounterRadius(false);
+  setMarkerPosition(defaultCenter)
+  setCenter(defaultCenter);
+  setCounterRadius(0);
+  setCircleRadius(0);
+
+setShape(shape);
+
+} catch(error){
+      console.log("Error Occured: ",error);
+}
 
   },[])
 
+
+
+
   const { isLoaded } = useJsApiLoader({
+  
     id: mapOptions.googleMapApiKey,
     googleMapsApiKey: mapOptions.googleMapApiKey,
 
   });
 
+
   const handleChange = (
     event: React.MouseEvent<HTMLElement>,
     shape: string
   ) => {
-    if (shape === "Polygon" || shape === "Normal" || shape === "Circle" ) {
+
+    try{
+
+
       setCordArray([]);
       setIsCounterRadius(false);
       setMarkerPosition(defaultCenter)
@@ -54,32 +74,52 @@ export default function ReactGoogleMapes() {
       setCounterRadius(0);
       setCircleRadius(0);
 
-    }
-
     setShape(shape);
+ 
+  }catch(error){
+    console.log("Error Occured: ",error);
+
+  }
+
   };
 
-  function handleDecrementRadius() {
-    if (circleRadius > 1000) {
+
+
+  const handleRadiusCounter = (action:string,limit:number)=> {
+
+try{
+
+
+  if(action === 'Decrement'){
+
+    if (circleRadius > limit) {
+      
       setCounterRadius(counterRadius - 1000 );
       setCircleRadius( counterRadius - 1000 );
 
     }
-  }
-
-  function handleIncrementRadius() {
-    if (circleRadius < 18000) {
+  
+  }else if(action === 'Increment') {
+    
       setCounterRadius(counterRadius + 1000);
       setCircleRadius( counterRadius + 1000 );
 
-    }
   }
+
+  }catch(error){
+  
+    console.log("Error Occured: ",error);
+  
+  }
+
+}
 
   return (
     <>
-      <center>
-        <h1>
-          React - Google - Map
+      <div style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
+
+        <h1>React - Google - Map </h1>
+          
           <ToggleButtonGroup
             sx={{ ml: 4 }}
             color="primary"
@@ -91,8 +131,10 @@ export default function ReactGoogleMapes() {
             <ToggleButton value="Normal">Normal</ToggleButton>
             <ToggleButton value="Polygon">Polygon</ToggleButton>
             <ToggleButton value="Circle">Circle</ToggleButton>
+            <ToggleButton value="Route">Route<RouteIcon/></ToggleButton>
           </ToggleButtonGroup>
-          {isCounterRadius && shape === "Circle" && (
+            <div  style={{width:"20%",margin:"0 10px",display:"flex",justifyContent:"center",alignItems:"center"}}>
+          {isCounterRadius && shape === "Circle" ? (
             <>
               <Button
                 sx={{
@@ -103,7 +145,7 @@ export default function ReactGoogleMapes() {
                 }}
                 variant="contained"
                 disabled={circleRadius === 1000 && true}
-                onClick={handleDecrementRadius}
+                onClick={()=>handleRadiusCounter("Decrement",1000)}
               >
                 -
               </Button>
@@ -120,14 +162,16 @@ export default function ReactGoogleMapes() {
                 }}
                 variant="contained"
                 disabled={circleRadius === 17000 && true}
-                onClick={handleIncrementRadius}
+                onClick={()=>handleRadiusCounter("Increment",18000)}
               >
                 +
               </Button>
-            </>
-          )}
-        </h1>
-      </center>
+              </>
+              ) : shape === "Route"}
+            </div>
+         
+        
+      </div>
       <Map
         isLoaded={isLoaded}
         shape={shape}

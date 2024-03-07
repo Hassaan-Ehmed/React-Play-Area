@@ -7,9 +7,10 @@ const Searchbar = ({
   handlePlaceChanged,
   inputRef,
   handleCurrentLocation,
+  setInput
 }: any) => {
   return (
-    <div style={{ position: "absolute", zIndex: 3, top: 20, left: 30 }}>
+    <div style={{ position: "absolute", zIndex: 3, top: 100, left: 30 }}>
       <StandaloneSearchBox
         onLoad={(ref) => (inputRef.current = ref)}
         onPlacesChanged={handlePlaceChanged}
@@ -26,6 +27,8 @@ const Searchbar = ({
             size="medium"
         defaultValue="Search Location"
         variant="filled"
+
+        onChange={(e) => setInput(e.target.value)}
 
           />
 {/* 
