@@ -9,7 +9,7 @@ function App() {
    
    {/* <DragDrop /> */}
    {/* <Pagination/> */}
-   <ReactGoogleMapes/>
+   <ReactGoogleMapes/> 
 
 
    </>

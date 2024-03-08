@@ -42,7 +42,45 @@ const Map = ({
   const  [input,setInput] = useState<string>('');
 
 
+
+
   useEffect(() => {
+
+
+const  mapElement =  mapRef.current
+
+if(mapElement){
+
+
+
+    const directionService = new google.maps.DirectionsService;
+    const directionDisplay = new google.maps.DirectionsRenderer;
+
+    let map = new google.maps.Map(document.getElementById("map") as any,{
+
+      // mapContainerStyle:containerStyle,
+      center:center,
+      zoom:10,
+      mapTypeId: "terrain",
+      zoomControl: false,
+      gestureHandling: "cooperative",
+      disableDefaultUI: true,
+      fullscreenControl: false,
+      // zoomControlOptions:null,
+      keyboardShortcuts: false,
+      styles: mapOptions.mapTheme,
+
+    });
+
+    directionDisplay.setMap(map);
+
+    if(shape === 'Route'){
+      
+      handlePlaceChanged(directionService,directionDisplay,true);
+    }
+
+
+  }
 
     // // Cleanup function to remove the map when the component unmounts
     // return () => {
@@ -50,11 +88,11 @@ const Map = ({
     // };
    
       // Clear marker position when shape changes
-      setMarkerPosition(defaultCenter);
+      // setMarkerPosition(defaultCenter);
       // eslint-disable-next-line react-hooks/exhaustive-deps
    
+  }, []);
 
-  }, [shape]);
 
 
 //   useEffect(()=>{
@@ -300,11 +338,131 @@ try{
     }
   };
 
-  const handlePlaceChanged = () => {
+//   const handlePlaceChanged = () => {
 
-    try{
+//     try{
 
     
+//     const [place] = inputRef.current.getPlaces();
+
+//     if (place) {
+//       // console.log("Place Name",place.name);
+
+//       const selectedPoint = {
+//         lat: place.geometry.location.lat(),
+//         lng: place.geometry.location.lng(),
+//       };
+
+//       setMarkerPosition(selectedPoint);
+//       setIsCounterRadius(false);
+//       setCordArray([]);
+      
+
+
+//       if(shape === "Route"){
+      
+//         if(navigator['geolocation']){
+      
+      
+//       window.navigator.geolocation.getCurrentPosition((position)=>{
+      
+//         const currentLocation = {
+//       lat:position.coords.latitude,
+//       lng:position.coords.longitude,
+      
+//         }
+
+
+
+// //         const map:any = new google.maps.Map(document.getElementById("map") as HTMLElement, {
+// //           center: center,
+// //           mapTypeId: "terrain",
+// //           zoom:10,
+// //           zoomControl: false,
+// //           gestureHandling: "cooperative",
+// //           disableDefaultUI: true,
+// //           fullscreenControl: false,
+// //           keyboardShortcuts: false,
+// //           styles: mapOptions.mapTheme,
+// //         }
+// //         );
+    
+// //         const flightPlanCoordinates = [ currentLocation , selectedPoint ];
+    
+// // console.log(
+
+// // "Current Location :",flightPlanCoordinates[0],
+// // "Destination :",flightPlanCoordinates[1],
+
+// // );
+        
+// //         const flightPath = new google.maps.Polyline({
+// //           path: flightPlanCoordinates,
+// //           geodesic: true,
+// //           strokeColor: "#FF0000",
+// //           strokeOpacity: 1.0,
+// //           strokeWeight: 2,
+// //         });
+// //         flightPath.setMap(map);
+// //         setMarkerPosition(currentLocation);
+// //         setCordArray([currentLocation,selectedPoint]);
+  
+//         if (!map) {
+//           return;
+//         }
+  
+//         const googleMap = map;
+//         const panTo = new window.google.maps.LatLng(
+//           selectedPoint.lat,
+//           selectedPoint.lng
+//         );
+//         googleMap.panTo(panTo);
+
+
+
+//   // console.log)())      
+         
+//       })
+      
+//         }
+         
+//       }
+
+
+//       // if (!map) { return; }
+
+//       if (!map) {
+//         return;
+//       }
+
+//       const googleMap = map;
+//       const panTo = new window.google.maps.LatLng(
+//         selectedPoint.lat,
+//         selectedPoint.lng
+//       );
+//       googleMap.panTo(panTo);
+//     }
+
+//   }catch(error){
+//     console.log("Error Occured: ",error);
+//   }
+
+
+
+//   };
+const handlePlaceChanged = (directionService:any,directionDisplay:any,permission = false) => {
+
+  // const input = inputRef.current.value;
+  // const placesService = new window.google.maps.places.PlacesService(mapRef.current);
+  // placesService.textSearch({ query: input }, (results, status) => {
+  //   if (status === window.google.maps.places.PlacesServiceStatus.OK && results?.length) {
+  //     const place:any = results[0];
+  //     const selectedPoint = {
+  //       lat: place.geometry.location.lat(),
+  //       lng: place.geometry.location.lng()
+  //     }
+    
+
     const [place] = inputRef.current.getPlaces();
 
     if (place) {
@@ -334,6 +492,8 @@ try{
       
         }
 
+
+      
         const map:any = new google.maps.Map(document.getElementById("map") as HTMLElement, {
           center: center,
           mapTypeId: "terrain",
@@ -345,7 +505,6 @@ try{
           keyboardShortcuts: false,
           styles: mapOptions.mapTheme,
         }
-           
         );
     
         const flightPlanCoordinates = [ currentLocation , selectedPoint ];
@@ -364,71 +523,52 @@ console.log(
           strokeOpacity: 1.0,
           strokeWeight: 2,
         });
-    
 
 
         flightPath.setMap(map);
         setMarkerPosition(currentLocation);
         setCordArray([currentLocation,selectedPoint]);
+
+
+
+// if(permission){
+              
+//   if(navigator['geolocation']){
+        
+        
+//     window.navigator.geolocation.getCurrentPosition((position)=>{
+    
+//       const currentLocation = {
+//         lat:position.coords.latitude,
+//         lng:position.coords.longitude,
+//       }
+
+//       directionService.route({
+//         origin:currentLocation,
+//         destination:selectedPoint,
+//         travelMode: 'DRIVING'
+//       },(response:any,status:string)=>{
+//         if(status === 'OK'){
+//           directionDisplay.setDirections(response);
+//         }else{
+//           alert(`Direction request faild due to ${status}`);
+//         }
+//       })
+
+//     })
   
-        if (!map) {
-          return;
-        }
   
-        const googleMap = map;
-        const panTo = new window.google.maps.LatLng(
-          selectedPoint.lat,
-          selectedPoint.lng
-        );
-        googleMap.panTo(panTo);
+//   }
+
+// }
+
+// setMarkerPosition(selectedPoint);
+    
+  });
 
 
+}}}}
 
-  // console.log)())      
-         
-      })
-      
-        }
-         
-      }
-
-
-      // if (!map) { return; }
-
-      if (!map) {
-        return;
-      }
-
-      const googleMap = map;
-      const panTo = new window.google.maps.LatLng(
-        selectedPoint.lat,
-        selectedPoint.lng
-      );
-      googleMap.panTo(panTo);
-    }
-
-  }catch(error){
-    console.log("Error Occured: ",error);
-  }
-
-
-
-  };
-
-  // const handlePlaceChanged = () => {
-  //   const input = inputRef.current.value;
-  //   const placesService = new window.google.maps.places.PlacesService(mapRef.current);
-  //   placesService.textSearch({ query: input }, (results, status) => {
-  //     if (status === window.google.maps.places.PlacesServiceStatus.OK && results?.length) {
-  //       const place:any = results[0];
-  //       const selectedPoint = {
-  //         lat: place.geometry.location.lat(),
-  //         lng: place.geometry.location.lng()
-  //       }
-  //       setMarkerPosition(selectedPoint);
-  //     }
-  //   });
-  // }
 
   const handleCurrentLocation = () => {
 
@@ -526,6 +666,8 @@ console.log(
 //   }
 // }
 
+      
+
 return (
     // isLoaded && (
 
@@ -537,7 +679,7 @@ return (
 
         <Searchbar
              handleCurrentLocation={handleCurrentLocation}
-              handlePlaceChanged={handlePlaceChanged}
+              // handlePlaceChanged={handlePlaceChanged}
               inputRef={inputRef}
               setInput={setInput}
             />
