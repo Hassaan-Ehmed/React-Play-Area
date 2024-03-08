@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-export default function index() {
+export default function DragDrop() {
 
 const [color,setColor] = useState("rebeccapurple")
 const [ProgressTodos,setProgressTodos] = useState<any>([])
