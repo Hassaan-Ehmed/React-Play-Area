@@ -8,7 +8,7 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
-import { TextField } from '@mui/material';
+import { ListItem, ListItemButton, ListItemText, TextField } from '@mui/material';
 import MUICard from './MUICard';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
@@ -34,10 +34,20 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export default function MUIDialog() {
 
   const originalArr = useReactCountries?.useCountries()?.countries.
-  sort((a:any, b:any) => a.name.localeCompare(b.name));
+  sort((a:any, b:any) => {
+    
+    // a.name.localeCompare(b.name))
+
+    const nameA = a.name.toUpperCase();
+  const nameB = b.name.toUpperCase();
+  if (nameA < nameB) return -1;
+  if (nameA > nameB) return 1;
   
-  const flagS = useReactCountries?.useCountries()
-  console.log("FLAGS",flagS);
+  return 0;
+
+  });
+  
+  let currentLetter = '';
   
       const [open, setOpen] = React.useState(false);
   const [input,setInput] = React.useState<string>("");
@@ -53,11 +63,17 @@ export default function MUIDialog() {
 
     }else{
         
-      const filteredCountries = originalArr.filter((country:any)=>
-
-        country.name.toLowerCase().includes(input.toLowerCase())
+      const filteredCountries = originalArr.filter((country:any)=>{
         
+        if( (country.name.toLowerCase().includes(input.toLowerCase())) || (country.emoji.toLowerCase().includes(input.toLowerCase())) || (country.countryCallingCode.toLowerCase().includes(input.toLowerCase()))){
+          return true
+        }else{
+      return    false
+        }
 
+      }
+
+    
       );
 
       setAllCountries(filteredCountries);
@@ -119,9 +135,14 @@ const handleBackToCountries=()=>{
 
 return (
     <React.Fragment>
+      <center>
+
+          <h1>  Hello Country Code Modal! </h1>
       <Button variant="outlined" onClick={handleClickOpen}>
-        Open dialog
+        Open Country
       </Button>
+
+      </center>
       <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
@@ -130,6 +151,7 @@ return (
         
         
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+       
        {showCountryDetails ?   
        
        <Button 
@@ -165,7 +187,7 @@ return (
           <CloseIcon />
         </IconButton>
       
-        <DialogContent dividers>
+        <DialogContent dividers sx={{width:360}}>
 
 {showCountryDetails  ?  detailPacket && (
 
@@ -173,36 +195,63 @@ return (
 
 ) :  
 
-allCountries.map((country:any,idx:number)=>(
+allCountries.map((country:any,idx:number)=>{
+  
+
+    const firstLetter = country.name.charAt(0).toUpperCase();
+
+    let label = null;
+
+    // Render label if the first letter of the country name changes
+    if (firstLetter !== currentLetter ) {
+   
+      currentLetter = firstLetter;
+      
+      label = <ListItem sx={{backgroundColor:"rgba(51,102,192,0.3)"}}>
+                 
+     <ListItemText primary={<strong>{firstLetter}</strong>} />
+     
+     </ListItem>
+   }
 
 
-<Typography gutterBottom 
+  return <>
+  
+  
+  {label}
+  
+  <Typography gutterBottom 
 
 sx={{
-
+  
   cursor:'pointer',
-  display:"flex",
+  display:"flex", 
   justifyContent:"space-between",
   alignItems:"center",
   border:"1px soild red",
   padding:'5px'
-
+  
 }}
 
 
 onClick={()=>handleCountryClick(country)}
 >
+
   <div style={{ 
     display:"flex",
-  justifyContent:"space-between",
-  alignItems:"center",
-  paddingLeft:"5px",paddingRight:"5px"}} ><img src={country.flags.png}  style={{height:"20px",width:"20px",aspectRatio:"3/2",objectFit:"contain",marginRight:"10px",boxShadow:"0px 0px 0px 0px black"}} /> {country.name}</div><span>{country.countryCallingCode == "" ? 'N/A' : country.countryCallingCode} </span>
+    justifyContent:"space-between",
+    alignItems:"center",
+    paddingLeft:"5px",paddingRight:"5px"}} ><img src={country.flags.png}  style={{height:"20px",width:"20px",aspectRatio:"3/2",objectFit:"contain",marginRight:"10px",boxShadow:"0px 0px 0px 0px black"}} /> {country.name}</div><span>{country.countryCallingCode == "" ? 'N/A' : country.countryCallingCode} </span>
   
-  </Typography>
-
-))
-        
+  
+  </Typography></>
+   
+  
   }
+)
+}  
+
+
         </DialogContent>
         <DialogActions>
         </DialogActions>

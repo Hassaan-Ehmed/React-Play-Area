@@ -19,7 +19,7 @@ export default function MUIList({name,capital,currency,population,languages}:any
     <List sx={{  bgcolor: 'background.paper' }}>
       <ListItem >
         <ListItemAvatar>
-          <Avatar>
+          <Avatar sx={{bgcolor:"purple"}}>
             <PublicIcon/>
           </Avatar>
         </ListItemAvatar>
@@ -27,7 +27,7 @@ export default function MUIList({name,capital,currency,population,languages}:any
       </ListItem>
       <ListItem>
         <ListItemAvatar>
-          <Avatar>
+          <Avatar sx={{bgcolor:"green"}}>
    <TourIcon/>
           </Avatar>
         </ListItemAvatar>
@@ -35,7 +35,7 @@ export default function MUIList({name,capital,currency,population,languages}:any
       </ListItem>
       <ListItem>
         <ListItemAvatar>
-          <Avatar>
+          <Avatar sx={{bgcolor:"#F6D704"}}>
             <PaidIcon/>
           </Avatar>
         </ListItemAvatar>
@@ -43,7 +43,7 @@ export default function MUIList({name,capital,currency,population,languages}:any
       </ListItem>
       <ListItem>
         <ListItemAvatar>
-          <Avatar>
+          <Avatar sx={{bgcolor:"red"}}>
           <PeopleAltIcon/>
           </Avatar>
         </ListItemAvatar>
@@ -51,7 +51,7 @@ export default function MUIList({name,capital,currency,population,languages}:any
       </ListItem>
       <ListItem>
         <ListItemAvatar>
-          <Avatar>
+          <Avatar sx={{bgcolor:"black"}}>
           <LanguageIcon />
           </Avatar>
         </ListItemAvatar>

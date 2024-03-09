@@ -8,7 +8,7 @@ import MUIList from './MUIList';
 
 export default function MUICard({detailPacket}:any) {
   return (
-    <Card sx={{ width:"300px" }} elevation={4}>
+    <Card sx={{ width: 345 }} elevation={4}>
       <CardActionArea>
         <CardMedia
           component="img"
