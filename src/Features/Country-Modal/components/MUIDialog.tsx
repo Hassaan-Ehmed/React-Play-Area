@@ -1,16 +1,16 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import Typography from '@mui/material/Typography';
-import { ListItem, ListItemButton, ListItemText, TextField } from '@mui/material';
-import MUICard from './MUICard';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import CloseIcon from '@mui/icons-material/Close';
+import { ListItem, ListItemText, TextField } from '@mui/material';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import { styled } from '@mui/material/styles';
+import * as React from 'react';
+import MUICard from './MUICard';
 
 
 const useReactCountries = require('use-react-countries');
@@ -33,6 +33,8 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 export default function MUIDialog() {
 
+
+
   const originalArr = useReactCountries?.useCountries()?.countries.
   sort((a:any, b:any) => {
     
@@ -47,6 +49,7 @@ export default function MUIDialog() {
 
   });
   
+
   let currentLetter = '';
   
       const [open, setOpen] = React.useState(false);
@@ -56,6 +59,7 @@ export default function MUIDialog() {
   const [detailPacket,setDetailPacket] = React.useState<any>({})
   
   React.useEffect(()=>{
+
 
     if(input.trim() === ""){
 
@@ -68,7 +72,9 @@ export default function MUIDialog() {
         if( (country.name.toLowerCase().includes(input.toLowerCase())) || (country.emoji.toLowerCase().includes(input.toLowerCase())) || (country.countryCallingCode.toLowerCase().includes(input.toLowerCase()))){
           return true
         }else{
-      return    false
+      
+          return false
+      
         }
 
       }

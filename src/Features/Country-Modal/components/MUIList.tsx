@@ -1,17 +1,13 @@
-import * as React from 'react';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import Avatar from '@mui/material/Avatar';
-import ImageIcon from '@mui/icons-material/Image';
-import WorkIcon from '@mui/icons-material/Work';
-import BeachAccessIcon from '@mui/icons-material/BeachAccess';
-import PublicIcon from '@mui/icons-material/Public';
-import TourIcon from '@mui/icons-material/Tour';
+import LanguageIcon from '@mui/icons-material/Language';
 import PaidIcon from '@mui/icons-material/Paid';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
-import LanguageIcon from '@mui/icons-material/Language';
+import PublicIcon from '@mui/icons-material/Public';
+import TourIcon from '@mui/icons-material/Tour';
+import Avatar from '@mui/material/Avatar';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemText from '@mui/material/ListItemText';
 
 
 export default function MUIList({name,capital,currency,population,languages}:any) {
@@ -23,7 +19,7 @@ export default function MUIList({name,capital,currency,population,languages}:any
             <PublicIcon/>
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Country Name" secondary={name} />
+        <ListItemText primary="Country Name" secondary={name ?? ''} />
       </ListItem>
       <ListItem>
         <ListItemAvatar>
@@ -31,7 +27,7 @@ export default function MUIList({name,capital,currency,population,languages}:any
    <TourIcon/>
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Country Capital" secondary={capital} />
+        <ListItemText primary="Country Capital" secondary={capital ?? ''} />
       </ListItem>
       <ListItem>
         <ListItemAvatar>
@@ -39,7 +35,7 @@ export default function MUIList({name,capital,currency,population,languages}:any
             <PaidIcon/>
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Currency" secondary={currency} />
+        <ListItemText primary="Currency" secondary={currency ?? ''} />
       </ListItem>
       <ListItem>
         <ListItemAvatar>
@@ -47,7 +43,7 @@ export default function MUIList({name,capital,currency,population,languages}:any
           <PeopleAltIcon/>
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Total Population" secondary={population} />
+        <ListItemText primary="Total Population" secondary={population ?? ''} />
       </ListItem>
       <ListItem>
         <ListItemAvatar>
@@ -55,7 +51,7 @@ export default function MUIList({name,capital,currency,population,languages}:any
           <LanguageIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Languages" secondary={languages} />
+        <ListItemText primary="Languages" secondary={languages ?? ''} />
       </ListItem>
     </List>
   );
